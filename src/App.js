@@ -7,34 +7,40 @@ function App() {
     <React.StrictMode>
       <Header />
       <Body />
-
+      <LoggingButton />
     </React.StrictMode>
   );
 }
 
 function Header() {
-  return (<div id="header">Welcome to React Project :) Clock : <Clock /></div>);
+  return (<div id="header">
+    Welcome to React Project :)
+    Clock :
+    <Clock />
+  </div>);
 }
 
 function Body() {
-  return (<React.StrictMode><SaveButton /><TodoList /></React.StrictMode >);
+  return (<React.StrictMode>
+    <SaveButton />
+  </React.StrictMode >);
 }
 
 class Clock extends React.Component {
-  constructor(props) {
+  state = { date: new Date() };
+
+  /*constructor(props) {
     super(props);
     this.state = { date: new Date() };
     console.log('constructor');
-  }
+  }*/
 
   componentDidMount() {
     this.timerID = setInterval(() => this.tick(), 1000);
-    console.log('componentDidMount');
   }
 
   componentWillUnmount() {
     clearInterval(this.timerID);
-    console.log('componentWillUnmount');
   }
 
   tick() {
@@ -44,23 +50,35 @@ class Clock extends React.Component {
   render() {
     return (<span>{this.state.date.toLocaleTimeString()}</span>);
   }
+  
 }
 
 class SaveButton extends React.Component {
-  constructor(props) {
-    super(props);
+  state = { text: "", nameList: [] };
+
+  handleClick = () => {
+    console.log(this.state);
+    this.setState(state => ({
+      nameList: [...state.nameList, state.text],
+      text:""
+    }))
   }
 
-  handleClick() {
-    alert('tiklandi');
+  onChange = (e) => {
+    console.log(e.target.value);
+    const text = e.target;
+    this.setState({
+      text: text.value
+    });
   }
 
   render() {
+    console.log(this.state.nameList);
     return (
-      <div>      
-        <input type="text"></input>
+      <div>
+        <input type="text" onChange={this.onChange} value={this.state.text}></input>
         <button onClick={this.handleClick}>Save</button>
-        <ActionLink/>
+        <TodoList nameList={this.state.nameList} />
       </div>
     );
   }
@@ -79,22 +97,39 @@ function ActionLink() {
   );
 }
 
-class TodoList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { nameList: ["samed", "rıfkı"] };
-  } 
+const TodoList = (props) => {
+  console.log(props);
 
-  render() {
-    return (
-      <ul>
-        {this.state.nameList.map(item => (
-          <li>{item}</li>
-        ))}
-      </ul>
+  function listli (nameList) {
+    return nameList.map(list => 
+      <li>{list}</li>
     );
   }
 
+  return (
+    <ul>
+      {listli(props.nameList)}
+    </ul>
+  );
+}
+
+
+
+
+class LoggingButton extends React.Component {
+
+  handleClick() {
+    console.log('This is:', this);
+  }
+
+  render() {
+    // Bu yazım şekli, `this`'in handleClick içerisinde bağlanmasını sağlar.
+    return (
+      <button onClick={() => this.handleClick()}>
+        Click me
+      </button>
+    );
+  }
 }
 
 
